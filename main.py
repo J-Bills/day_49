@@ -8,7 +8,6 @@ def main():
     chrome_options.add_experimental_option('detach', True)
     #chrome_options.add_argument('--headless')
     driver = webdriver.Chrome(options=chrome_options)
-    
     return driver
 
 def login(driver):
@@ -21,7 +20,7 @@ def login(driver):
     sign_in_button = driver.find_element(By.CLASS_NAME, value="btn__primary--large")
     print(sign_in_button.text)
     sign_in_button.click()
-    
+
 def jobSearch(driver):
     driver.get('https://www.linkedin.com/jobs')
     
@@ -42,7 +41,7 @@ def jobSearch(driver):
     location_text = driver.find_element(By.ID, value=f"jobs-search-box-location-id-{sesh_id}")
     location_text.send_keys(config.query_dict['location'])
     job_text.send_keys(Keys.ENTER)
-    
+
 
 def jobFilter(driver):
     driver.implicitly_wait(10)
@@ -50,20 +49,36 @@ def jobFilter(driver):
     easy_apply_button = driver.find_element(By.CSS_SELECTOR, value='.search-reusables__filter-binary-toggle .artdeco-pill')
     easy_apply_button.click()
     
-    data_posted_button = driver.find_element(By.ID, value='searchFilter_timePostedRange')
-    data_posted_button.click()
-    values = driver.find_elements(By.NAME, value='date-posted-filter-value')
-    value = values[3]
-    value.click()
+    driver.implicitly_wait(10)
     
+    date_posted_button = driver.find_element(By.ID, value='#searchFilter_timePostedRange')
+    date_posted_button.get_attribute('type')
+    print('date clicked')
+    
+    driver.implicitly_wait(2)
+    
+    recent_jobs = driver.find_element(By.XPATH, value='//*[@id="timePostedRange-r86400"]')
+    recent_jobs.click()
+    print(recent_jobs.is_selected())
 
+    
+    drop_downs = driver.find_elements(By.CSS_SELECTOR,value="reusable-search-filters-buttons.display-flex.justify-flex-end.mt3.ph2")
+    date_buttons_parent = drop_downs[1]
+    show_results_button = date_buttons_parent.find_element(By.XPATH,value='//button[@aria-label="Apply current filter to show results"]')
+    show_results_button.click()
+    driver.implicitly_wait(2)
+
+def jobApply(driver):
+    jobs = driver.find_elements(By.CSS_SELECTOR, value='.scaffold-layout__list-container .ember-view')
+    for job in jobs:
+        job.click()
 
 def nextPage(driver):
     next_page_button = driver.find_element(By.CSS_SELECTOR, value='.jobs-search-pagination .artdeco-button')
-
 
 if __name__ == "__main__":
     browser = main()
     login(browser)
     jobSearch(browser)
     jobFilter(browser)
+    
