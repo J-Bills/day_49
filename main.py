@@ -26,31 +26,44 @@ def jobSearch(driver):
     driver.get('https://www.linkedin.com/jobs')
     
     if len(config.query_dict) == 0:
-        job_title_input = input("Enter the job title that you want:\n")
-        location_input = input("Enter the location:\n")
+        job_title_input = input("Enter the job title that you want")
+        location_input = input("Enter the location")
         config.query_dict['job_title'] = job_title_input
         config.query_dict['location'] = location_input
 
     driver.implicitly_wait(5)
     
-    ember = driver.find_element(By.CLASS_NAME, value="ember-view")
-    ember_value = ember.get_attribute('id')
-    
     job_text = driver.find_element(By.CLASS_NAME, value="jobs-search-box__text-input")
     job_text.send_keys(config.query_dict['job_title'])
     job_text.click()
-        
-    location_text = driver.find_element(By.ID, value=f"jobs-search-box-location-id-{ember_value}")
+    job_id = str(job_text.get_attribute('id'))
+    sesh_id = job_id.split(sep='-')[5]
+    
+    location_text = driver.find_element(By.ID, value=f"jobs-search-box-location-id-{sesh_id}")
     location_text.send_keys(config.query_dict['location'])
-    location_text.send_keys(Keys.ENTER)
+    job_text.send_keys(Keys.ENTER)
+    
 
-def jobApply(driver):
-    # easy_apply_button = driver.find_element(By.XPATH, value='//*[@id="ember380"]')
-    pass
+def jobFilter(driver):
+    driver.implicitly_wait(10)
+    
+    easy_apply_button = driver.find_element(By.CSS_SELECTOR, value='.search-reusables__filter-binary-toggle .artdeco-pill')
+    easy_apply_button.click()
+    
+    data_posted_button = driver.find_element(By.ID, value='searchFilter_timePostedRange')
+    data_posted_button.click()
+    values = driver.find_elements(By.NAME, value='date-posted-filter-value')
+    value = values[3]
+    value.click()
+    
+
+
+def nextPage(driver):
+    next_page_button = driver.find_element(By.CSS_SELECTOR, value='.jobs-search-pagination .artdeco-button')
 
 
 if __name__ == "__main__":
     browser = main()
     login(browser)
     jobSearch(browser)
-    jobApply(browser)
+    jobFilter(browser)
