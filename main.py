@@ -69,9 +69,20 @@ def jobFilter(driver):
     driver.implicitly_wait(2)
 
 def jobApply(driver):
-    jobs = driver.find_elements(By.CSS_SELECTOR, value='.scaffold-layout__list-container .ember-view')
+    #jobs = driver.find_element(By.CLASS_NAME, value='.scaffold-layout__list-container')
+    jobs = driver.find_elements(By.XPATH, value='//div[@data-view-name="job-card"]')
     for job in jobs:
         job.click()
+        apply_button = driver.find_element(By.XPATH, value='(//button[contains(@aria-label, "Easy")])[2]')
+        apply_button.click()
+        footer = driver.find_element(By.CSS_SELECTOR,value='display-flex.justify-flex-end.ph5.pv4')
+        try:
+            next_button = footer.find_elements(By.XPATH,value='//button[contains(@aria-label, "Continue)]')
+        except Exception:
+            pass
+        else:
+            next_button.click()
+            pass
 
 def nextPage(driver):
     next_page_button = driver.find_element(By.CSS_SELECTOR, value='.jobs-search-pagination .artdeco-button')
@@ -81,4 +92,4 @@ if __name__ == "__main__":
     login(browser)
     jobSearch(browser)
     jobFilter(browser)
-    
+    jobApply(browser)
